@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 
-export function useAmortization(initialPv = 250000, initialRateAa = 8, initialMonths = 420, initialSystem = 'PRICE', initialTaxaAdm = 0, initialDfi = 0, initialMip = 0) {
+export function useAmortization(initialPv = 200000, initialRateAa = 7.66, initialMonths = 420, initialSystem = 'SAC', initialTaxaAdm = 0, initialDfi = 0, initialMip = 0) {
   const pv = ref(initialPv);
   const rateAa = ref(initialRateAa);
   const months = ref(initialMonths);

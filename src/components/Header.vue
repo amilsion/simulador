@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+  <header class="bg-white border-b border-gray-200 px-4 py-3 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
     <div class="flex items-center gap-4">
       <div class="p-2 bg-gray-100 rounded-md">
         <TrendingDown class="w-5 h-5 text-gray-600" />
@@ -10,15 +10,15 @@
       </div>
     </div>
 
-    <div class="flex items-center gap-3">
-      <div class="relative">
+    <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
+      <div class="relative w-full sm:w-auto">
         <User class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input 
           type="text" 
           :value="clientName"
           @input="$emit('update:clientName', $event.target.value)"
           placeholder="Nome do Cliente" 
-          class="pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm w-full sm:w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 

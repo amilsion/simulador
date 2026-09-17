@@ -9,7 +9,7 @@
     />
 
     <main class="flex-1 max-w-[1400px] w-full mx-auto p-4 flex flex-col gap-4">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col lg:flex-row">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col lg:flex-row">
         
         <div class="w-full lg:w-[450px] shrink-0 border-r border-gray-200">
           <FinancingParams 
@@ -41,7 +41,7 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
         <AmortizationTable 
           :originalTable="schedule.originalTable" 
           :amortizedTable="schedule.amortizedTable"
@@ -92,7 +92,7 @@ const {
   totalAmortizadoFgts,
   totalAmortizado,
   prazoAtual
-} = useAmortization(250000, 8, 420, 'PRICE', 0, 0, 0);
+} = useAmortization(200000, 7.66, 420, 'SAC', 0, 0, 0);
 
 const isModalOpen = ref(false);
 const isModalFgts = ref(false);

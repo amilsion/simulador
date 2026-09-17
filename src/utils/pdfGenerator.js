@@ -5,6 +5,13 @@ export const generatePdf = (data, chartImageBase64) => {
   const doc = new jsPDF();
   const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
   const formatDate = (date) => date.toLocaleDateString('pt-BR');
+  const formatYearsMonths = (months) => {
+    const y = Math.floor(months / 12);
+    const m = months % 12;
+    if (y === 0) return `${m} meses`;
+    if (m === 0) return `${y} ano${y > 1 ? 's' : ''}`;
+    return `${y} ano${y > 1 ? 's' : ''} e ${m} ${m > 1 ? 'meses' : 'mês'}`;
+  };
 
   // Colors
   const textColor = [51, 51, 51];
@@ -32,7 +39,7 @@ export const generatePdf = (data, chartImageBase64) => {
   doc.text(`Valor Financiado: ${formatCurrency(data.pv)}`, 14, 52);
   doc.text(`Sistema: ${data.system}`, 14, 58);
   doc.text(`Taxa de Juros: ${data.rateAa}% a.a.`, 14, 64);
-  doc.text(`Prazo Original: ${data.months} meses`, 14, 70);
+  doc.text(`Prazo Original: ${data.months} meses (${formatYearsMonths(data.months)})`, 14, 70);
 
   doc.text(`Total a Pagar (Original): ${formatCurrency(data.originalTotalPagar)}`, 110, 52);
   doc.text(`Juros do Contrato: ${formatCurrency(data.originalTotalJuros)}`, 110, 58);
@@ -47,7 +54,7 @@ export const generatePdf = (data, chartImageBase64) => {
   doc.setTextColor(80, 80, 80);
   doc.setFont(undefined, 'normal');
   doc.text(`Total Amortizado: ${formatCurrency(data.totalAmortizado)}`, 14, 92);
-  doc.text(`Novo Prazo: ${data.prazoAtual} meses (-${data.months - data.prazoAtual})`, 14, 98);
+  doc.text(`Novo Prazo: ${data.prazoAtual} meses (${formatYearsMonths(data.prazoAtual)})`, 14, 98);
   doc.text(`Amortização Manual: ${formatCurrency(data.totalAmortizadoManual)}`, 14, 104);
 
   doc.text(`Economia de Juros: ${formatCurrency(data.economiaJuros)}`, 110, 92);
@@ -111,8 +118,21 @@ export const generatePdf = (data, chartImageBase64) => {
     },
     willDrawCell: (data) => {
       // data.row.raw[9] is the isPaidOff flag
-      if (data.section === 'body' && data.row.raw[9]) {
-        doc.setTextColor(200, 200, 200); // Faint text
+      if (data.section === 'body') {
+        if (data.row.raw[9]) {
+          doc.setTextColor(200, 200, 200); // Faint text
+        } else {
+          if (data.column.index === 5 && data.row.raw[5] !== '-') {
+            doc.setTextColor(234, 88, 12); // orange-600
+            doc.setFont(undefined, 'bold');
+          } else if (data.column.index === 6 && data.row.raw[6] !== '-') {
+            doc.setTextColor(5, 150, 105); // emerald-600
+            doc.setFont(undefined, 'bold');
+          } else {
+            doc.setTextColor(51, 51, 51);
+            doc.setFont(undefined, 'normal');
+          }
+        }
       }
     },
     didDrawCell: (data) => {
