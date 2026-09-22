@@ -10,12 +10,14 @@
   },
   "dependencies": {
     "@lucide/vue": "^1.46.0",
+    "canvas-confetti": "^1.9.4",
     "chart.js": "^4.5.1",
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.8",
     "v-money3": "^3.26.1",
     "vue": "^3.5.42",
-    "vue-chartjs": "^5.3.4"
+    "vue-chartjs": "^5.3.4",
+    "vue-router": "^5.3.1"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",

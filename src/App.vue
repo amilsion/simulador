@@ -1,143 +1,35 @@
 <template>
-  <div class="min-h-screen bg-gray-100 flex flex-col font-sans">
-    <Header 
-      v-model:system="system" 
-      v-model:clientName="clientName"
-      @open-manual="openManualModal" 
-      @open-fgts="openFgtsModal" 
-      @generate-pdf="handleGeneratePdf"
-    />
+  <div class="min-h-screen bg-gray-100 flex font-sans text-gray-900">
+    <!-- Mobile overlay -->
+    <div v-if="isSidebarOpen" @click="isSidebarOpen = false" class="fixed inset-0 bg-gray-900/50 z-40 lg:hidden backdrop-blur-sm"></div>
+    
+    <!-- Sidebar -->
+    <div :class="[
+      'fixed inset-y-0 left-0 z-50 w-64 bg-white transform transition-transform duration-300 ease-in-out lg:translate-x-0',
+      isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+    ]">
+      <Sidebar @navigate="isSidebarOpen = false" />
+    </div>
 
-    <main class="flex-1 max-w-[1400px] w-full mx-auto p-4 flex flex-col gap-4">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col lg:flex-row">
-        
-        <div class="w-full lg:w-[450px] shrink-0 border-r border-gray-200">
-          <FinancingParams 
-            v-model:pv="pv"
-            v-model:rateAa="rateAa"
-            v-model:months="months"
-            v-model:taxaAdm="taxaAdm"
-            v-model:seguroDfi="seguroDfi"
-            v-model:seguroMip="seguroMip"
-            :system="system"
-            :rateMonthDisplay="rateMonthDisplay"
-            :totalJuros="schedule.originalTotalJuros"
-            :totalPagar="originalTotalPagar"
-            :totalAmortizadoManual="totalAmortizadoManual"
-            :totalAmortizadoFgts="totalAmortizadoFgts"
-            :totalAmortizado="totalAmortizado"
-            :economiaJuros="economiaJuros"
-            :economiaTotal="economiaTotal"
-            :prazoAtual="prazoAtual"
-          />
-        </div>
-        
-        <div class="flex-1 min-w-0">
-          <EvolutionChart 
-            ref="evolutionChartRef"
-            :originalTable="schedule.originalTable" 
-            :amortizedTable="schedule.amortizedTable"
-          />
-        </div>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-        <AmortizationTable 
-          :originalTable="schedule.originalTable" 
-          :amortizedTable="schedule.amortizedTable"
-          v-model:extraAmortizations="extraAmortizations"
-          v-model:fgtsAmortizations="fgtsAmortizations"
-        />
-      </div>
-    </main>
-
-    <ConfigAmortizationModal 
-      :isOpen="isModalOpen" 
-      :isFgts="isModalFgts" 
-      :totalMonths="months" 
-      :existingData="isModalFgts ? fgtsAmortizations : extraAmortizations"
-      @close="isModalOpen = false" 
-      @apply="applyAmortizations" 
-    />
+    <!-- Main Content -->
+    <div class="flex-1 lg:ml-64 min-w-0 flex flex-col min-h-screen">
+      <!-- Mobile Header for Hamburger -->
+      <header class="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-0 z-30">
+        <button @click="isSidebarOpen = true" class="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+          <Menu class="w-6 h-6" />
+        </button>
+        <div class="font-bold text-gray-800 text-lg">Simulador</div>
+      </header>
+      
+      <router-view />
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { useAmortization } from './composables/useAmortization';
-import Header from './components/Header.vue';
-import FinancingParams from './components/FinancingParams.vue';
-import EvolutionChart from './components/EvolutionChart.vue';
-import AmortizationTable from './components/AmortizationTable.vue';
-import ConfigAmortizationModal from './components/ConfigAmortizationModal.vue';
-import { generatePdf } from './utils/pdfGenerator';
+import { Menu } from '@lucide/vue';
+import Sidebar from './components/Sidebar.vue';
 
-const {
-  pv,
-  rateAa,
-  months,
-  system,
-  taxaAdm,
-  seguroDfi,
-  seguroMip,
-  extraAmortizations,
-  fgtsAmortizations,
-  rateMonthDisplay,
-  schedule,
-  originalTotalPagar,
-  amortizedTotalPagar,
-  economiaJuros,
-  economiaTotal,
-  totalAmortizadoManual,
-  totalAmortizadoFgts,
-  totalAmortizado,
-  prazoAtual
-} = useAmortization(200000, 7.66, 420, 'SAC', 0, 0, 0);
-
-const isModalOpen = ref(false);
-const isModalFgts = ref(false);
-const clientName = ref('');
-const evolutionChartRef = ref(null);
-
-const openManualModal = () => {
-  isModalFgts.value = false;
-  isModalOpen.value = true;
-};
-
-const openFgtsModal = () => {
-  isModalFgts.value = true;
-  isModalOpen.value = true;
-};
-
-const applyAmortizations = (data) => {
-  if (isModalFgts.value) {
-    fgtsAmortizations.value = data;
-  } else {
-    extraAmortizations.value = data;
-  }
-};
-
-const handleGeneratePdf = () => {
-  const chartImage = evolutionChartRef.value ? evolutionChartRef.value.getBase64Image() : null;
-  
-  const pdfData = {
-    clientName: clientName.value,
-    pv: pv.value,
-    system: system.value,
-    rateAa: rateAa.value,
-    months: months.value,
-    originalTotalPagar: originalTotalPagar.value,
-    originalTotalJuros: schedule.value.originalTotalJuros,
-    totalAmortizado: totalAmortizado.value,
-    prazoAtual: prazoAtual.value,
-    totalAmortizadoManual: totalAmortizadoManual.value,
-    economiaJuros: economiaJuros.value,
-    amortizedTotalPagar: amortizedTotalPagar.value,
-    totalAmortizadoFgts: totalAmortizadoFgts.value,
-    originalTable: schedule.value.originalTable,
-    amortizedTable: schedule.value.amortizedTable
-  };
-
-  generatePdf(pdfData, chartImage);
-};
+const isSidebarOpen = ref(false);
 </script>
