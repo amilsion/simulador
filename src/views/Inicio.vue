@@ -3,9 +3,9 @@
     
     <header class="flex flex-col gap-2 mb-2">
       <p class="text-[11px] font-bold tracking-[0.2em] text-gray-500 uppercase">
-        Análise Pro · Ecossistema Financiamento Pro
+        Análise Completa de clientes habitacional
       </p>
-      <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">Bem-vindo, João.</h1>
+      <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">Seja Bem-vindo.</h1>
     </header>
 
     <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col gap-6">
